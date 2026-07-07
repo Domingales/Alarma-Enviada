@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Sinc Alarmas</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div id="app" class="theme-blue mode-3d">
+    <header class="topbar">
+      <div>
+        <h1>Sinc Alarmas</h1>
+        <p id="statusLine">Modo local · Firebase pendiente</p>
+      </div>
+      <button id="menuBtn" class="hamburger" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    </header>
+
+    <main class="home">
+      <img class="hero" src="assets/img/hero-alarm-phones.svg" alt="Despertador antiguo con dos teléfonos móviles" />
+
+      <section class="quick-status glass">
+        <div><strong>Este móvil:</strong> <span id="myDeviceIdText"></span></div>
+        <div><strong>Emparejado con:</strong> <span id="peerDeviceIdText">No emparejado</span></div>
+        <div><strong>Pendientes para este móvil:</strong> <span id="pendingIncomingCount">0</span></div>
+        <div><strong>Pendientes enviadas:</strong> <span id="pendingOutgoingCount">0</span></div>
+      </section>
+
+      <section class="pending-preview glass">
+        <div class="section-head">
+          <h2>Alarmas y actuaciones recientes</h2>
+          <button id="openListBtn" type="button">Ver todas</button>
+        </div>
+        <div id="pendingPreviewList" class="mini-list"></div>
+      </section>
+    </main>
+
+    <nav id="sideMenu" class="side-menu" aria-hidden="true">
+      <button class="close-menu" id="closeMenuBtn" type="button" aria-label="Cerrar menú">×</button>
+      <h2>Menú</h2>
+      <button type="button" data-panel="pairPanel">Emparejar</button>
+      <button type="button" data-panel="settingsPanel">Ajustes</button>
+      <button type="button" data-panel="sendPanel">Enviar alarma</button>
+      <button type="button" data-panel="listPanel">Alarmas</button>
+    </nav>
+    <div id="scrim" class="scrim"></div>
+
+    <section id="pairPanel" class="panel hidden">
+      <button class="panel-close" type="button" data-close aria-label="Cerrar">×</button>
+      <h2>Emparejar móviles</h2>
+      <label for="pairPassword">Contraseña compartida</label>
+      <div class="row">
+        <input id="pairPassword" type="password" placeholder="La misma en los dos móviles" autocomplete="off" />
+        <button id="connectBtn" type="button">Conectar</button>
+      </div>
+      <p class="hint">Escribe la misma contraseña en ambos móviles. Después escanea el QR del otro móvil o introduce su DNI manualmente.</p>
+      <div class="device-card">
+        <strong>DNI de este móvil</strong>
+        <code id="myDeviceIdCode"></code>
+        <button id="copyMyIdBtn" class="secondary" type="button">Copiar mi DNI</button>
+        <img id="qrImg" alt="QR del DNI de este móvil" />
+      </div>
+      <div class="grid2">
+        <button id="scanBtn" type="button">Escanear QR del otro móvil</button>
+        <button id="manualPeerBtn" type="button">Añadir DNI manual</button>
+      </div>
+      <video id="qrVideo" class="qr-video hidden" playsinline></video>
+      <p id="pairInfo" class="info"></p>
+    </section>
+
+    <section id="settingsPanel" class="panel hidden">
+      <button class="panel-close" type="button" data-close aria-label="Cerrar">×</button>
+      <h2>Ajustes</h2>
+      <label>Color</label>
+      <div class="chips" id="themeChips">
+        <button type="button" data-theme="blue">Azul</button>
+        <button type="button" data-theme="green">Verde</button>
+        <button type="button" data-theme="purple">Morado</button>
+        <button type="button" data-theme="orange">Naranja</button>
+        <button type="button" data-theme="dark">Oscuro</button>
+      </div>
+      <label>Visualización</label>
+      <div class="chips" id="modeChips">
+        <button type="button" data-mode="2d">2D</button>
+        <button type="button" data-mode="3d">3D</button>
+      </div>
+      <label for="windowOpacity">Opacidad de ventanas</label>
+      <div class="opacity-row">
+        <input id="windowOpacity" type="range" min="45" max="100" step="5" />
+        <strong id="windowOpacityText">90%</strong>
+      </div>
+      <p class="hint">A menor opacidad, más se verá el fondo del móvil detrás de las ventanas.</p>
+
+      <label for="soundSelect">Sonido de alarma</label>
+      <select id="soundSelect">
+        <option value="tone1">Sonido 1 - archivo tono1.mp3</option>
+        <option value="tone2">Sonido 2 - archivo tono2.mp3</option>
+        <option value="tone3">Sonido 3 - archivo tono3.mp3</option>
+        <option value="tone4">Sonido 4 - archivo tono4.mp3</option>
+        <option value="tone5">Sonido 5 - archivo tono5.mp3</option>
+      </select>
+      <button id="testSoundBtn" type="button">Probar sonido</button>
+      <p class="hint">Los sonidos están en assets/sounds/. Puedes cambiarlos sustituyendo tono1.mp3, tono2.mp3, tono3.mp3, tono4.mp3 y tono5.mp3 por otros archivos con el mismo nombre.</p>
+    </section>
+
+    <section id="sendPanel" class="panel hidden">
+      <button class="panel-close" type="button" data-close aria-label="Cerrar">×</button>
+      <h2>Enviar alarma al otro móvil</h2>
+      <label for="alarmDateTime">Fecha y hora</label>
+      <input id="alarmDateTime" type="datetime-local" />
+      <label for="alarmNote">Nota / descripción</label>
+      <textarea id="alarmNote" rows="5" placeholder="Ejemplo: acuérdate de llamar..."></textarea>
+      <button id="sendAlarmBtn" type="button" class="primary">Enviar alarma</button>
+      <p id="sendInfo" class="info"></p>
+    </section>
+
+    <section id="listPanel" class="panel hidden">
+      <button class="panel-close" type="button" data-close aria-label="Cerrar">×</button>
+      <h2>Alarmas</h2>
+      <div class="list-actions">
+        <button id="showPendingBtn" type="button">Solo pendientes</button>
+        <button id="showAllBtn" type="button">Todas</button>
+      </div>
+      <div id="alarmList" class="alarm-list"></div>
+    </section>
+
+    <div id="receiverOverlay" class="receiver-overlay hidden">
+      <div class="receiver-box">
+        <h2 id="receiverTitle">ALARMA</h2>
+        <div id="receiverStatus" class="receiver-status">Alarma activa</div>
+        <div id="receiverScheduledTime" class="receiver-scheduled-time"></div>
+        <p id="receiverNote"></p>
+        <div id="receiverSenderGpsBlock" class="receiver-gps-block">
+          <h3>Seguimiento GPS del emisor</h3>
+          <div id="receiverSenderGpsLast" class="receiver-gps-last">Esperando posición GPS del otro móvil...</div>
+          <div id="receiverSenderGpsList" class="receiver-gps-list"></div>
+        </div>
+        <button id="receivedBtn" type="button">RECIBIDO</button>
+      </div>
+    </div>
+
+    <div id="senderPopup" class="sender-popup hidden">
+      <div class="sender-box">
+        <h2>Confirmación recibida</h2>
+        <p id="senderPopupText"></p>
+        <button id="senderPopupOk" type="button">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
